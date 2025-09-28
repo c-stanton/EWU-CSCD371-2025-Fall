@@ -80,6 +80,7 @@ public class Program
             string correctAnswerIndex = lines[lineIndex + 4];
 
             Question question = new();
+            question[i] = question;
             question.Text = questionText;
             question.Answers = new string[3];
             question.Answers[0] = answer1;
