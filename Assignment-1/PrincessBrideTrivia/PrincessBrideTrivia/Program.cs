@@ -34,7 +34,7 @@ public class Program
     {
         return (100 * numberCorrectAnswers / numberOfQuestions) + "%";
     }
-
+    //arbritrary change
     //UPDATED THIS FUNCTION WITH PARAMETER isHard
     public static bool AskQuestion(Question question, bool isHard)
     {
