@@ -32,7 +32,7 @@ public class Program
 
     public static string GetPercentCorrect(int numberCorrectAnswers, int numberOfQuestions)
     {
-        return (numberCorrectAnswers / numberOfQuestions * 100) + "%";
+        return (100 * numberCorrectAnswers / numberOfQuestions) + "%";
     }
 
     //UPDATED THIS FUNCTION WITH PARAMETER isHard
