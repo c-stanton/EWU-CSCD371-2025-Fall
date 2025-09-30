@@ -6,15 +6,23 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Console.Write("Princess Bride Trivia!!! Do you want to try hard mode?(y/n): ");
-        string choice = Console.ReadLine();
-        bool isHardMode = false;
-        if (String.Equals(choice, "y", StringComparison.OrdinalIgnoreCase))
+        string choice;
+        do
         {
-            isHardMode = true;
+            Console.Write("Princess Bride Trivia!!! Do you want to try hard mode?(y/n): ");
+            choice = Console.ReadLine()?.Trim().ToLower();
+            if (choice != "y" && choice != "n")
+            {
+                Console.WriteLine("Please enter 'y' for yes or 'n' for no.");
+            }
+        } while (choice != "y" && choice != "n");
+
+        bool isHardMode = choice == "y";
+        if (isHardMode)
+        {
             Console.WriteLine("HARD MODE ACTIVATED!!!!!!!!!!!!");
         }
-        
+
         string filePath = GetFilePath();
         Question[] questions = LoadQuestions(filePath);
 
