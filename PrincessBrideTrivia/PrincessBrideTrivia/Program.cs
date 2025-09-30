@@ -1,4 +1,6 @@
-﻿namespace PrincessBrideTrivia;
+﻿using System.Text.RegularExpressions;
+
+namespace PrincessBrideTrivia;
 
 public class Program
 {
@@ -65,9 +67,19 @@ public class Program
         Console.WriteLine("Incorrect");
         return false;
     }
+
+    // Helper method that strips punctuation from user input
+    public static string RemovePunctuation(string input)
+    {
+        return Regex.Replace(input, @"[^\w\s]", "");
+    }
+
     public static bool DisplayHardResult(string userGuess, Question question)
     {
-        if (String.Equals(userGuess, question.Answers[int.Parse(question.CorrectAnswerIndex) - 1], StringComparison.OrdinalIgnoreCase))
+        string normalizedGuess = RemovePunctuation(userGuess).Trim();
+        string normalizedAnswer = RemovePunctuation(question.Answers[int.Parse(question.CorrectAnswerIndex) - 1]).Trim();
+
+        if (String.Equals(normalizedGuess, normalizedAnswer, StringComparison.OrdinalIgnoreCase))
         {
             Console.WriteLine("Correct");
             return true;
