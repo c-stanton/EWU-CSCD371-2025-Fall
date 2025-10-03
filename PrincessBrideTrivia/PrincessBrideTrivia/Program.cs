@@ -79,6 +79,7 @@ public class Program
     // Helper method that strips punctuation from user input
     public static string RemovePunctuation(string input)
     {
+        if (input == null) return string.Empty;
         return Regex.Replace(input, @"[^\w\s]", "");
     }
 
