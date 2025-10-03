@@ -85,6 +85,11 @@ public class Program
 
     public static bool DisplayHardResult(string userGuess, Question question)
     {
+        if (userGuess == null)
+        {
+            Console.WriteLine("Incorrect");
+            return false;
+        }
         string normalizedGuess = RemovePunctuation(userGuess).Trim();
         if (!int.TryParse(question.CorrectAnswerIndex, out int index) || index < 1 || index > question.Answers.Length)
         {
