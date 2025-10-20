@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Logger.entities
-{
-    public record class Book(string Title, string? Subtitle, FullName? Author)
-    {
-        public Guid Id { get; init; } = Guid.NewGuid();
+namespace Logger.entities;
 
-        // Calculated property — no backing field.
-        public string Name => string.IsNullOrWhiteSpace(Subtitle) ? Title : $"{Title}: {Subtitle}";
-    }
+public record class Book(string Title, string? Subtitle, FullName? Author)
+{
+    public Guid Id { get; init; } = Guid.NewGuid();
+
+    // Calculated property — no backing field.
+    public string Name => string.IsNullOrWhiteSpace(Subtitle) ? Title : $"{Title}: {Subtitle}";
 }
