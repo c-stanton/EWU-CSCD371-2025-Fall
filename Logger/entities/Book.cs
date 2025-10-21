@@ -17,5 +17,15 @@ public record class Book : EntityBase
     {
         Title = title;
         Author = author;
+
+        if (string.IsNullOrWhiteSpace(Title))
+        {
+            throw new ArgumentException("Title cannot be null or empty.", nameof(title));
+        }
+
+        if (string.IsNullOrWhiteSpace(Author))
+        {
+            throw new ArgumentException("Author cannot be null or empty.", nameof(author));
+        }
     }
 }
