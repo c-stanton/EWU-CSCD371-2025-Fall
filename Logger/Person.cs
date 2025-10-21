@@ -10,7 +10,7 @@ public abstract record Person : EntityBase
 {
     public FullName FullName { get; init; }
 
-    public override string Name => FullName.ToString();
+    public override string Name => $"{FullName.First} {FullName.Middle} {FullName.Last}";
 
     public Person(FullName fullName)
     {
