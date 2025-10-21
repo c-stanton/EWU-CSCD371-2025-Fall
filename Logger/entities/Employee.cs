@@ -7,17 +7,12 @@ using Logger;
 
 namespace Logger.entities;
 
-public record class Employee(FullName FullName, string EmployeeId)
+public record class Employee : Person
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
-
-    private string FormatName() =>
-        FullName is null
-            ? string.Empty
-            : string.IsNullOrWhiteSpace(FullName.MiddleName)
-                ? $"{FullName.LastName}, {FullName.FirstName}"
-                : $"{FullName.LastName}, {FullName.FirstName} {FullName.MiddleName}";
-
-    // Calculated property — no backing field
-    public string Name => FormatName();
+    public string Position { get; init; }
+    
+    public Employee(FullName fullName, string position) : base(fullName)
+    {
+        Position = position;
+    }
 }
