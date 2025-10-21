@@ -4,6 +4,7 @@ namespace Logger.Tests;
 
 public class EmployeeTests
 {
+
     [Fact]
     public void Employee_PositionProperty_IsSetCorrectly()
     {
@@ -15,17 +16,38 @@ public class EmployeeTests
         Assert.Equal(position, employee.Position);
     }
 
-    [Theory]
-    [InlineData("Eric", "B", "Williams", "Director of Operations", "Eric B Williams")]
-    [InlineData("Tara", (string)null, "Jones", "Marketing", "Tara Jones")]
-    [InlineData("Sam", "", "Lee", "IT", "Sam Lee")]
-    public void Employee_NameProperty_ReturnsFullNameFormat(string first, string middle, string last, string position, string expectedName)
+    [Fact]
+    public void Employee_NameProperty_ReturnsFullName_WithMiddleName()
     {
         // Arrange
+        var first = "Eric";
+        var middle = "B";
+        var last = "Williams";
         var fullName = new Logger.FullName(first, middle, last);
-        var employee = new Logger.entities.Employee(fullName, position);
+        var employee = new Logger.entities.Employee(fullName, "Director of Operations");
         // Assert
-        Assert.Equal(expectedName, employee.Name);
+        Assert.Equal("Eric B Williams", employee.Name);
+    }
+
+    [Fact]
+    public void Employee_NameProperty_ReturnsFullName_WhenMiddleNameIsNull()
+    {
+        // Arrange
+        string? middle = null;
+        var fullName = new Logger.FullName("Tara", middle, "Jones");
+        var employee = new Logger.entities.Employee(fullName, "Marketing");
+        // Assert
+        Assert.Equal("Tara Jones", employee.Name);
+    }
+
+    [Fact]
+    public void Employee_NameProperty_ReturnsFullName_WhenMiddleNameIsEmpty()
+    {
+        // Arrange
+        var fullName = new Logger.FullName("Sam", "", "Lee");
+        var employee = new Logger.entities.Employee(fullName, "IT");
+        // Assert
+        Assert.Equal("Sam Lee", employee.Name);
     }
 
     [Fact]
