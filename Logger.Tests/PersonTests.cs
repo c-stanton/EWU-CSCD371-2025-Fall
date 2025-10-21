@@ -102,7 +102,7 @@ public class PersonTests
         Assert.NotEqual(p1, p2);
     }
 
-    private record class TestPerson : Person
+    private sealed record class TestPerson : Person
     {
         public TestPerson(FullName fullName) : base(fullName) { }
         public TestPerson(FullName fullName, Guid id) : base(fullName)
