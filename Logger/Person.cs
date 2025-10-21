@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Logger;
+﻿namespace Logger;
 
 public abstract record Person : EntityBase
 {
     public FullName FullName { get; init; }
 
-    public override string Name => $"{FullName.First} {FullName.Middle} {FullName.Last}";
+    // This is called explicitly because it is clearer and more consistent with the IEntity contract that Name is a string 
+    public override string Name => FullName.ToString();
 
     public Person(FullName fullName)
     {

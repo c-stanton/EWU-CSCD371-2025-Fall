@@ -14,4 +14,7 @@ public record class FullName
         Middle = middle ?? string.Empty;
         Last = last;
     }
+    public override string ToString() =>
+        string.Join(" ", new[] { First, Middle, Last }
+            .Where(part => !string.IsNullOrWhiteSpace(part)));
 }
