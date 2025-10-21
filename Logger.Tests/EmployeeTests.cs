@@ -17,7 +17,7 @@ public class EmployeeTests
 
     [Theory]
     [InlineData("Eric", "B", "Williams", "Director of Operations", "Eric B Williams")]
-    [InlineData("Tara", null, "Jones", "Marketing", "Tara Jones")]
+    [InlineData("Tara", (string)null, "Jones", "Marketing", "Tara Jones")]
     [InlineData("Sam", "", "Lee", "IT", "Sam Lee")]
     public void Employee_NameProperty_ReturnsFullNameFormat(string first, string middle, string last, string position, string expectedName)
     {
