@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 
 namespace Logger.entities;
 
-public record class Book(string Title, string? Subtitle, FullName? Author)
+public record class Book : EntityBase
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public string Title { get; init; }
+    public string Author { get; init; }
+    public override string Name => $"{Title} by {Author}";
 
-    // Calculated property — no backing field.
-    public string Name => string.IsNullOrWhiteSpace(Subtitle) ? Title : $"{Title}: {Subtitle}";
+    public Book(string title, string author)
+    {
+        Title = title;
+        Author = author;
+    }
 }

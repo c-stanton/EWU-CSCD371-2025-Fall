@@ -7,15 +7,13 @@ using Logger;
 
 namespace Logger.entities;
 
-public record class Student(FullName FullName, string StudentID)
-{
-    public Guid Id { get; init; } = Guid.NewGuid();
+public record class Student : Person
+{ 
+    public string GraduationYear { get; set; }
 
-    // Calculated property — formats FullName and appends student number.
-    public string Name =>
-        FullName is null
-            ? $"Student #{StudentID}"
-            : string.IsNullOrWhiteSpace(FullName.MiddleName)
-                ? $"{FullName.LastName}, {FullName.FirstName} (#{StudentID})"
-                : $"{FullName.LastName}, {FullName.FirstName} {FullName.MiddleName} (#{StudentID})";
+    public Student(FullName fullName, string graduationYear) : base(fullName)
+    {
+        GraduationYear = graduationYear;
+    }
+
 }
