@@ -16,6 +16,11 @@ public record class Student : Person
     public Student(FullName fullName, string graduationYear) : base(fullName)
     {
         GraduationYear = graduationYear;
+
+        if (string.IsNullOrWhiteSpace(GraduationYear))
+        {
+            throw new ArgumentException("Graduation year cannot be null or empty.", nameof(graduationYear));
+        }
     }
 
 }
