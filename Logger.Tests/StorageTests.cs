@@ -13,7 +13,7 @@ public class TestEntity : IEntity
 
 public class StorageTests
 {
-    private Storage CreateStorageWithEntity(IEntity entity)
+    private static Storage CreateStorageWithEntity(IEntity entity)
     {
         var storage = new Storage();
         storage.Add(entity);
