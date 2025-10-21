@@ -6,12 +6,12 @@
 public record class FullName
 {
     public string First { get; init; }
-    public string Middle { get; init; }
+    public string? Middle { get; init; }
     public string Last { get; init; }
-    public FullName(string first, string middle, string last)
+    public FullName(string first, string? middle, string last)
     {
         First = first;
-        Middle = middle;
+        Middle = middle ?? string.Empty;
         Last = last;
     }
 }
