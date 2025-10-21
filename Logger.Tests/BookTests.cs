@@ -38,4 +38,40 @@ public class BookTests
         // Act & Assert
         Assert.Equal(author, book.Author);
     }
+
+    [Fact]
+    public void Book_Id_IsReadOnlyAfterInitialization()
+    {
+        // Arrange
+        var book = new Logger.entities.Book("Test", "TestAuthor");
+        // Act & Assert
+        Assert.NotEqual(Guid.Empty, book.Id);
+    }
+
+    [Fact]
+    public void Book_Equality_ReturnsFalseForIdenticalContentDueToDifferentIds()
+    {
+        // Arrange
+        var title = "The Hitchhiker's Guide";
+        var author = "Douglas Adams";
+        // Act
+        var book1 = new Logger.entities.Book(title, author);
+        var book2 = new Logger.entities.Book(title, author);
+        // Assert
+        Assert.NotEqual(book1.Id, book2.Id);
+        Assert.False(book1.Equals(book2));
+        Assert.False(book1 == book2);
+        Assert.NotEqual(book1.GetHashCode(), book2.GetHashCode());
+    }
+
+    [Fact]
+    public void Book_Id_CanBeSetExplicitlyOnInitialization()
+    {
+        // Arrange
+        var expectedId = new Guid("11223344-5566-7788-99AA-BBCCDDEEFF00");
+        // Act
+        var book = new Logger.entities.Book("Id Test", "Test Author") { Id = expectedId };
+        // Assert
+        Assert.Equal(expectedId, book.Id);
+    }
 }
