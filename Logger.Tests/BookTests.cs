@@ -74,4 +74,20 @@ public class BookTests
         // Assert
         Assert.Equal(expectedId, book.Id);
     }
+
+    [Fact]
+    public void Book_Constructor_ThrowsException_ForEmptyTitle()
+    {
+        // Arrange, Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() => new Logger.entities.Book("", "Author"));
+        Assert.Equal("Title cannot be null or empty. (Parameter 'title')", exception.Message);
+    }
+
+    [Fact]
+    public void Book_Constructor_ThrowsException_ForEmptyAuthor()
+    {
+        // Arrange, Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() => new Logger.entities.Book("Title", ""));
+        Assert.Equal("Author cannot be null or empty. (Parameter 'author')", exception.Message);
+    }
 }
