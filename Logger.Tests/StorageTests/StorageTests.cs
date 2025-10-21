@@ -17,7 +17,9 @@ public class StorageTests
     {
         // Arrange
         var storage = new Storage();
-        var entity = new TestEntity();
+        storage.Add(entity);
+        return storage;
+    }
 
         // Act
         storage.Add(entity);
