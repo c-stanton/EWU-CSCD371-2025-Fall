@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Logger.entities;
 
+// The Name property is implemented implicitly because it should be publicly accessible as part of the class's API.
 public record class Book : EntityBase
 {
     public string Title { get; init; }
