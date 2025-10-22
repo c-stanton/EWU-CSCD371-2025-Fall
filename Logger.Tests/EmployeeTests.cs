@@ -96,4 +96,15 @@ public class EmployeeTests
         Assert.Equal(newPosition, newEmployee.Position);
         Assert.NotSame(originalEmployee, newEmployee);
     }
+
+    [Fact]
+    public void Employee_Constructor_ThrowsException_WhenPositionIsNullOrEmpty()
+    {
+        // Arrange
+        var fullName = new Logger.FullName("Linda", "K", "Brown");
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => new Logger.entities.Employee(fullName, null!));
+        Assert.Throws<ArgumentException>(() => new Logger.entities.Employee(fullName, ""));
+        Assert.Throws<ArgumentException>(() => new Logger.entities.Employee(fullName, "   "));
+    }
 }

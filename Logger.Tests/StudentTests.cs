@@ -100,4 +100,14 @@ public class StudentTests
         Assert.NotSame(originalStudent, updatedStudent);
     }
 
+    [Fact]
+    public void Student_Constructor_ThrowsException_WhenGraduationYearIsNullOrEmpty()
+    {
+        // Arrange
+        var fullName = new FullName("Grace", "I", "Johnson");
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => new entities.Student(fullName, null!));
+        Assert.Throws<ArgumentException>(() => new entities.Student(fullName, ""));
+        Assert.Throws<ArgumentException>(() => new entities.Student(fullName, "   "));
+    }
 }
