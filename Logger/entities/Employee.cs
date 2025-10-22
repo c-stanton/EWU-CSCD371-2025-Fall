@@ -19,7 +19,7 @@ public record class Employee : Person
 
         if (string.IsNullOrWhiteSpace(Position))
         {
-            throw new ArgumentException("Graduation year cannot be null or empty.", nameof(Position));
+            throw new ArgumentException("Position cannot be null or empty.", nameof(position));
         }
     }
 }
