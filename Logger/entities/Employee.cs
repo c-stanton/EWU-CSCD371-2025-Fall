@@ -16,5 +16,10 @@ public record class Employee : Person
     public Employee(FullName fullName, string position) : base(fullName)
     {
         Position = position;
+
+        if (string.IsNullOrWhiteSpace(Position))
+        {
+            throw new ArgumentException("Position cannot be null or empty.", nameof(position));
+        }
     }
 }
