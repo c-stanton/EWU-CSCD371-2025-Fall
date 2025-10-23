@@ -11,7 +11,7 @@ public record class FullName
     public FullName(string first, string? middle, string last)
     {
         First = first;
-        Middle = middle ?? string.Empty;
+        Middle = middle;
         Last = last;
     }
     public override string ToString() =>
