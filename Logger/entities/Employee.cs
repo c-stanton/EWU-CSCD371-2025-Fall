@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Logger;
-
-namespace Logger.entities;
+﻿namespace Logger.entities;
 
 // Employee class inherits the IEntity implementation from Person. So both interface members are inherited implicitly
 // and are publicly accessible as part of the class's API.
