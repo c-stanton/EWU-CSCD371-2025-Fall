@@ -96,8 +96,6 @@ public class StorageTests
     {
         // Arrange
         var storage = new Storage();
-        var book = new Book("1984", "George Orwell");
-        storage.Add(book);
 
         // Act
         var retrieved = storage.Get(Guid.NewGuid());
@@ -124,5 +122,19 @@ public class StorageTests
         Assert.True(storage.Contains(book));
         Assert.True(storage.Contains(employee));
         Assert.True(storage.Contains(student));
+    }
+
+    [Fact]
+    public void Remove_NonExistingEntity_ShouldNotThrow()
+    {
+        // Arrange
+        var storage = new Storage();
+        var book = new Book("1984", "George Orwell"); 
+
+        // Act & Assert
+        var exception = Record.Exception(() => storage.Remove(book));
+
+        Assert.Null(exception); 
+        Assert.False(storage.Contains(book)); 
     }
 }
