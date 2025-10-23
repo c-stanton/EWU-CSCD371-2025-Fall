@@ -80,15 +80,39 @@ public class FullNameTests
     }
 
     [Fact]
-    public void FullName_Equality_TreatsNullAndEmptyMiddleAsEqual()
+    public void FullName_ToString_ReturnsCorrectFormat_WhenMiddleNameIsWhitespace()
+    {
+        // Arrange
+        var fullName = new Logger.FullName("Anna", "   ", "Brown");
+        // Act
+        var result = fullName.ToString();
+        // Assert
+        Assert.Equal("Anna Brown", result);
+    }
+
+    [Fact]
+    public void FullName_ToString_ReturnsCorrectFormat_WhenMiddleNameIsNull()
+    {
+        // Arrange
+        var fullName = new Logger.FullName("Lucy", null, "Adams");
+        // Act
+        var result = fullName.ToString();
+        // Assert
+        Assert.Equal("Lucy Adams", result);
+    }
+
+
+
+    [Fact]
+    public void FullName_Equality_TreatsNullAndEmptyMiddleAsUnEqual()
     {
         // Arrange
         var nameWithNull = new Logger.FullName("Case", null, "Study");
         var nameWithEmpty = new Logger.FullName("Case", "", "Study");
 
         // Assert
-        Assert.True(nameWithNull.Equals(nameWithEmpty));
-        Assert.True(nameWithNull == nameWithEmpty);
-        Assert.Equal(nameWithNull.GetHashCode(), nameWithEmpty.GetHashCode());
+        Assert.False(nameWithNull.Equals(nameWithEmpty));
+        Assert.False(nameWithNull == nameWithEmpty);
+        Assert.NotEqual(nameWithNull.GetHashCode(), nameWithEmpty.GetHashCode());
     }
 }
