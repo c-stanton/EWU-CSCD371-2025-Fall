@@ -8,7 +8,7 @@ namespace GenericsHomeWork.Tests
     public class NodeTests
     {
         [TestMethod]
-        public void TestNodeCreation()
+        public void Node_SetsValue_PointsToSelf()
         {
             // Arrange
             int expectedValue = 5;
