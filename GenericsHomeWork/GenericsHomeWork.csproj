@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableNetAnalyzers>true</EnableNetAnalyzers>
+    <LanguageVersion>9.0</LanguageVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
