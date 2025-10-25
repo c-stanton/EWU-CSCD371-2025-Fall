@@ -1,9 +1,10 @@
+namespace GenericsHomeWork.Tests;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GenericsHomeWork;
 using System;
 
-namespace GenericsHomeWork.Tests
-{
+
     [TestClass]
     public class NodeTests
     {
@@ -22,4 +23,3 @@ namespace GenericsHomeWork.Tests
         }
     }
     
-}
