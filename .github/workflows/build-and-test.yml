@@ -10,3 +10,4 @@ jobs:
     with:
       check-formatting: false
       add-analyzers: false
+      generate-coverage: true
