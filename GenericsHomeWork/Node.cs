@@ -17,7 +17,7 @@ public class Node<T>
     //override the ToString() method to return the string representation of the value stored in the node. 
     public override string ToString()
     {
-        return Value.ToString();
+        return Value?.ToString() ?? string.Empty;
     }
 
     public void Append(T value)
