@@ -3,9 +3,9 @@ namespace GenericsHomeWork.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GenericsHomeWork;
 using System;
+using System.Globalization;
 
-
-    [TestClass]
+[TestClass]
     public class NodeTests
     {
         [TestMethod]
@@ -157,7 +157,7 @@ using System;
         // Act
         string result = node.ToString();
         // Assert
-        Assert.AreEqual(value.ToString(), result, "ToString() should return the string representation of the integer value.");
+        Assert.AreEqual(value.ToString(CultureInfo.InvariantCulture), result, "ToString() should return the string representation of the integer value.");
     }
 
     [TestMethod]
