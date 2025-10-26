@@ -2,32 +2,70 @@
 
 public class Node<T>
 {
-    //Any type of value <T> can be stored in this node
     public T Value { get; set; }
-    public Node<T> Next { get; private set; } //Must make setter private
+    public Node<T> Next { get; private set; }
 
     public Node(T value)
     {
-        //Takes in the value to be stored, sets it to the Value propert, 
-        // then assignes the next property to point to 'this', pointing to itself in this case
+       
         Value = value;
         Next = this;
     }
 
-    //override the ToString() method to return the string representation of the value stored in the node. 
     public override string ToString()
     {
         return Value?.ToString() ?? string.Empty;
     }
 
+    private void SetNext(Node<T> nextNode)
+    {
+        Next = nextNode;
+    }
+
     public void Append(T value)
     {
-        //Takes value as parameter, creates a new node with passed value, 
-        // adds it to the end of the list then sets it to this.Next which points to the first node in the list. 
-
+        if (Exists(value))
+        {
+            throw new InvalidOperationException($"Value '{value}' already exists in the list.");
+        }
         Node<T> newNode = new Node<T>(value);
         newNode.Next = this.Next;
         this.Next = newNode;
+    }
+
+    public bool Exists(T value)
+    {
+        Node<T> currentNode = this;
+        do
+        {
+            if (EqualityComparer<T>.Default.Equals(currentNode.Value, value))
+            {
+                return true;
+            }
+            currentNode = currentNode.Next;
+        } while (currentNode != this);
+        return false;
+    }
+
+    public void Clear()
+    {
+        if (this.Next == this)
+        {
+            return;
+        }
+
+        Node<T> firstRemoved = this.Next;
+        this.SetNext(this);
+        Node<T> currentNode = firstRemoved;
+        while (currentNode.Next != this.Next)
+        {
+            if (currentNode.Next == this)
+            {
+                break;
+            }
+            currentNode = currentNode.Next;
+        }
+        currentNode.SetNext(firstRemoved);
     }
 }
 
