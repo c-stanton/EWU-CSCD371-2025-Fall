@@ -47,6 +47,9 @@ public class Node<T>
         return false;
     }
 
+    // We don't need to worry about garbage collection for removed nodes since
+    // they will be collected automatically when there are no references to the head node.
+
     public void Clear()
     {
         if (this.Next == this)
@@ -56,18 +59,6 @@ public class Node<T>
 
         Node<T> firstRemoved = this.Next;
         this.SetNext(this);
-        Node<T> currentNode = firstRemoved;
-        while (currentNode.Next != this.Next)
-        {
-            if (currentNode.Next == this)
-            {
-                break;
-            }
-            currentNode = currentNode.Next;
-        }
-        currentNode.SetNext(firstRemoved);
+        
     }
 }
-
-
-

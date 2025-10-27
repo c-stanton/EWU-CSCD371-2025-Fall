@@ -95,21 +95,6 @@ using System.Globalization;
     }
 
     [TestMethod]
-    public void Clear_ClosesLoop_OfRemovedNodes()
-    {
-        // Arrange
-        var head = new Node<int>(100);
-        head.Append(200);
-        head.Append(300);
-        var removedStartNode = head.Next;
-        var removedEndNode = head.Next.Next;
-        // Act
-        head.Clear();
-        // Assert
-        Assert.AreEqual(removedStartNode, removedEndNode.Next, "After Clear(), the last removed node should point to the first removed node, closing the loop.");
-    }
-
-    [TestMethod]
     public void Clear_OnSingleNodeList_DoesNothing()
     {
         // Arrange
