@@ -8,19 +8,47 @@ using System.Globalization;
 [TestClass]
     public class NodeTests
     {
-        [TestMethod]
-        public void Node_SetsValue_PointsToSelf()
-        {
-            // Arrange
-            int expectedValue = 5;
+    [TestMethod]
+    public void Node_SetsValue_PointsToSelf()
+    {
+        // Arrange
+        int expectedValue = 67;
 
-            // Act
-            Node<int> node = new Node<int>(expectedValue);
+        // Act
+        Node<int> node = new Node<int>(expectedValue);
 
-            // Assert
-            Assert.AreEqual(expectedValue, node.Value);
-            Assert.AreEqual(node, node.Next); 
-        }
+        // Assert
+        Assert.AreEqual(expectedValue, node.Value);
+        Assert.AreEqual(node, node.Next);
+    }
+
+    [TestMethod]
+
+    public void Node_IsNeverNull_ReturnsNotNull()
+    {
+        // Arrange & Act
+        var node = new Node<object>(new object());
+
+        // Assert
+        Assert.IsNotNull(node, "Node instance shouldnt be null after its creation.");
+        Assert.IsNotNull(node.Next, "Next should point to itself and not be null");
+    }
+
+    [TestMethod]
+
+    public void Node_AfterAppending_IsNotNull()
+    {
+        // Arrange
+        var head = new Node<string>("head");
+
+        // Act
+        head.Append("newNode");
+
+        // Assert
+        Assert.IsNotNull(head.Next, "Next node after appending should not be null.");
+        Assert.AreNotEqual(head, head.Next, "Next node should not be the same as head after appending.");
+    }
+    
 
     [TestMethod]
     public void Append_InsertsNewNode_AfterCurrentNode()
