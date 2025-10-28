@@ -3,14 +3,13 @@ using System.Collections.Generic;
 
 namespace GenericsHomeWork;
 
-public class Node<T> : ICollection<T>
+public class NodeCollection<T> : ICollection<T>
 {
     public T Value { get; set; }
-    public Node<T>? Next { get; private set; }
+    public NodeCollection<T> Next { get; private set; }
 
-    public Node(T value)
+    public NodeCollection(T value)
     {
-
         Value = value;
         Next = this;
     }
@@ -18,11 +17,6 @@ public class Node<T> : ICollection<T>
     public override string ToString()
     {
         return Value?.ToString() ?? string.Empty;
-    }
-
-    private void SetNext(Node<T>? nextNode)
-    {
-        Next = nextNode;
     }
 
     public void Add(T item)
@@ -41,14 +35,14 @@ public class Node<T> : ICollection<T>
         {
             throw new InvalidOperationException($"Value '{value}' already exists in the list.");
         }
-        Node<T> newNode = new Node<T>(value);
+        NodeCollection<T> newNode = new NodeCollection<T>(value);
         newNode.Next = this.Next;
         this.Next = newNode;
     }
 
     public bool Exists(T value)
     {
-        Node<T> currentNode = this;
+        NodeCollection<T> currentNode = this;
         do
         {
             if (EqualityComparer<T>.Default.Equals(currentNode.Value, value))
@@ -69,16 +63,7 @@ public class Node<T> : ICollection<T>
         {
             return;
         }
-
-        Node<T> endNode = this.Next!;
-
-        while (endNode.Next != this)
-        {
-            endNode = endNode.Next!;
-        }
-
-        endNode.SetNext(null);
-        this.SetNext(this);
+        this.Next = this;
     }
 
     public int Count
@@ -86,7 +71,7 @@ public class Node<T> : ICollection<T>
         get
         {
             int count = 0;
-            Node<T>? currNode = this.Next;
+            NodeCollection<T>? currNode = this.Next;
             while (currNode != null && currNode != this)
             {
                 count++;
@@ -100,15 +85,14 @@ public class Node<T> : ICollection<T>
 
     public bool Remove(T value)
     {
-        Node<T>? prevValue = this;
-        Node<T>? currValue = this.Next;
+        NodeCollection<T> prevValue = this;
+        NodeCollection<T> currValue = this.Next;
 
-        while (currValue != null && currValue != this)
+        while (currValue != this)
         {
             if (EqualityComparer<T>.Default.Equals(currValue.Value, value))
             {
-                prevValue.SetNext(currValue.Next);
-                currValue.SetNext(null);
+                prevValue.Next = currValue.Next;
                 return true;
             }
             prevValue = currValue;
@@ -119,10 +103,7 @@ public class Node<T> : ICollection<T>
 
     public void CopyTo(T[] array, int arrayIndex)
     {
-        if (array == null)
-        {
-            throw new ArgumentNullException(nameof(array));
-        }
+        ArgumentNullException.ThrowIfNull(array);
 
         if (arrayIndex < 0)
         {
@@ -134,7 +115,7 @@ public class Node<T> : ICollection<T>
             throw new ArgumentException("Destination array is too small.");
         }
 
-        Node<T>? currentValue = this.Next;
+        NodeCollection<T>? currentValue = this.Next;
         while (currentValue != null && currentValue != this)
         {
             array[arrayIndex++] = currentValue.Value;
@@ -144,7 +125,7 @@ public class Node<T> : ICollection<T>
 
     public IEnumerator<T> GetEnumerator()
     {
-        Node<T>? currentValue = this.Next;
+        NodeCollection<T>? currentValue = this.Next;
         while (currentValue != null && currentValue != this)
         {
             yield return currentValue.Value;

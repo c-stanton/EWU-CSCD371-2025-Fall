@@ -15,7 +15,7 @@ public class NodeTests
         int expectedValue = 67;
 
         // Act
-        Node<int> node = new Node<int>(expectedValue);
+        NodeCollection<int> node = new NodeCollection<int>(expectedValue);
 
         // Assert
         Assert.AreEqual(expectedValue, node.Value);
@@ -27,7 +27,7 @@ public class NodeTests
     public void Node_IsNeverNull_ReturnsNotNull()
     {
         // Arrange & Act
-        var node = new Node<object>(new object());
+        var node = new NodeCollection<object>(new object());
 
         // Assert
         Assert.IsNotNull(node, "Node instance shouldnt be null after its creation.");
@@ -39,7 +39,7 @@ public class NodeTests
     public void Node_AfterAppending_IsNotNull()
     {
         // Arrange
-        var head = new Node<string>("head");
+        var head = new NodeCollection<string>("head");
 
         // Act
         head.Append("newNode");
@@ -54,7 +54,7 @@ public class NodeTests
     public void Append_InsertsNewNode_AfterCurrentNode()
     {
         // Arrange
-        var head = new Node<string>("first");
+        var head = new NodeCollection<string>("first");
         // Act
         head.Append("second");
         // Assert
@@ -74,7 +74,7 @@ public class NodeTests
     public void Append_ThrowsException_OnDuplicateValue()
     {
         // Arrange
-        var head = new Node<int>(10);
+        var head = new NodeCollection<int>(10);
         head.Append(20);
         // Act
         head.Append(10);
@@ -84,7 +84,7 @@ public class NodeTests
     public void Exists_ReturnsTrue_IfValueExists()
     {
         // Arrange
-        var head = new Node<double>(1.1);
+        var head = new NodeCollection<double>(1.1);
         head.Append(2.2);
         head.Append(3.3);
         // Act & Assert
@@ -97,7 +97,7 @@ public class NodeTests
     public void Exists_ReturnsFalse_IfValueDoesNotExist()
     {
         // Arrange
-        var head = new Node<char>('A');
+        var head = new NodeCollection<char>('A');
         head.Append('B');
         head.Append('C');
         // Act & Assert
@@ -109,7 +109,7 @@ public class NodeTests
     public void Clear_RemovesAllNodes_ExceptHead()
     {
         // Arrange
-        var head = new Node<string>("root");
+        var head = new NodeCollection<string>("root");
         head.Append("child1");
         head.Append("child2");
         head.Append("child3");
@@ -126,7 +126,7 @@ public class NodeTests
     public void Clear_OnSingleNodeList_DoesNothing()
     {
         // Arrange
-        var head = new Node<int>(42);
+        var head = new NodeCollection<int>(42);
         // Act
         head.Clear();
         // Assert
@@ -138,7 +138,7 @@ public class NodeTests
     public void Clear_IsololatesCurrentNode()
     {
         // Arrange
-        var head = new Node<int>(1);
+        var head = new NodeCollection<int>(1);
         head.Append(2);
         head.Append(3);
 
@@ -154,7 +154,7 @@ public class NodeTests
     {
         // Arrange
         string value = "TestNode";
-        var node = new Node<string>(value);
+        var node = new NodeCollection<string>(value);
         // Act
         string result = node.ToString();
         // Assert
@@ -166,7 +166,7 @@ public class NodeTests
     {
         // Arrange
         int value = 12345;
-        var node = new Node<int>(value);
+        var node = new NodeCollection<int>(value);
         // Act
         string result = node.ToString();
         // Assert
@@ -178,7 +178,7 @@ public class NodeTests
     {
         // Arrange
         string? value = null;
-        var node = new Node<string>(value!);
+        var node = new NodeCollection<string>(value!);
         // Act
         string result = node.ToString();
         // Assert
@@ -189,7 +189,7 @@ public class NodeTests
     public void Add_FunctionallyEquivalentToAppend()
     {
         // Arrange
-        var head = new Node<string>("A");
+        var head = new NodeCollection<string>("A");
         // Act
         ((ICollection<string>)head).Add("B");
         // Assert
@@ -201,7 +201,7 @@ public class NodeTests
     public void Count_CalculatesCorrectNumberOfNodes()
     {
         // Arrange 
-        var head = new Node<int>(100);
+        var head = new NodeCollection<int>(100);
         Assert.AreEqual(0, head.Count, "Initial count should be 0.");
         // Act
         head.Add(200);
@@ -218,7 +218,7 @@ public class NodeTests
     public void Remove_RemovesExistingNode_ReturnsTrue()
     {
         // Arrange
-        var head = new Node<int>(1);
+        var head = new NodeCollection<int>(1);
         head.Add(2);
         head.Add(3);
         // Act
@@ -239,7 +239,7 @@ public class NodeTests
     public void Remove_NonExistingNode_ReturnsFalse()
     {
         // Arrange
-        var head = new Node<string>("Start");
+        var head = new NodeCollection<string>("Start");
         head.Add("One");
         // Act
         bool result = head.Remove("Missing");
@@ -252,7 +252,7 @@ public class NodeTests
     public void Remove_HeadNodeValue_ReturnsFalse()
     {
         // Arrange
-        var head = new Node<int>(10);
+        var head = new NodeCollection<int>(10);
         head.Add(20);
         // Act
         bool result = head.Remove(10);
@@ -265,7 +265,7 @@ public class NodeTests
     public void CopyTo_CopiesElementsToCorrectArray()
     {
         // Arrange
-        var head = new Node<double>(0.0);
+        var head = new NodeCollection<double>(0.0);
         head.Add(1.1);
         head.Add(2.2);
         head.Add(3.3);
@@ -285,7 +285,7 @@ public class NodeTests
     public void GetEnumerator_AllowsForeachTraversal()
     {
         // Arrange
-        var head = new Node<string>("Start");
+        var head = new NodeCollection<string>("Start");
         head.Add("Last");
         head.Add("Middle");
         var expected = new List<string> { "Middle", "Last" };
@@ -303,7 +303,7 @@ public class NodeTests
     public void IsReadOnly_ReturnsFalse()
     {
         // Arrange
-        var head = new Node<int>(5);
+        var head = new NodeCollection<int>(5);
         // Act
         bool isReadOnly = ((ICollection<int>)head).IsReadOnly;
         // Assert

@@ -16,7 +16,7 @@ public class VennDiagram<T> where T : class
 
     public IEnumerable<T> FindIntersection(params Circle<T>[] circles)
     {
-        if (circles == null || !circles.Any())
+        if (circles == null || circles.Length == 0)
         {
             return Enumerable.Empty<T>();
         }
