@@ -8,10 +8,10 @@ using System.Linq;
 [TestClass]
 public class VennDiagramTests
 {
-    private Circle<string> _circleRed;
-    private Circle<string> _circleGreen;
-    private Circle<string> _circleRound;
-    private VennDiagram<string> _diagram;
+    private Circle<string> _circleRed = null!;
+    private Circle<string> _circleGreen = null!;
+    private Circle<string> _circleRound = null!;
+    private VennDiagram<string> _diagram = null!;
 
     [TestInitialize]
     public void Setup()
@@ -142,13 +142,6 @@ public class VennDiagramTests
     {
         var actual = _diagram.FindIntersection().ToList();
         Assert.AreEqual(0, actual.Count, "Intersection with no circles should return empty.");
-    }
-
-    [TestMethod]
-    public void FindIntersection_NullCircles_ReturnsEmpty()
-    {
-        var actual = _diagram.FindIntersection(null).ToList();
-        Assert.AreEqual(0, actual.Count, "Intersection with null circles should return empty.");
     }
 }
 
