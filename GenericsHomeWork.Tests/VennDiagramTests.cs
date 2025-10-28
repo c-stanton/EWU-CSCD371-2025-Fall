@@ -106,7 +106,7 @@ public class VennDiagramTests
     {
         var expected = new List<string>
         {
-            "Apple", "Strawberry", "Grapes", "Tomato", "Cherry", "Bell Pepper", "Mars",
+            "Apple", "Strawberry", "Grapes", "Tomato", "Cherry", "Bell Pepper", "Wagon",
             "Kiwi", "Limes", "Moss", "Orange", "Watermelon"
         };
         var actual = _diagram.FindUnion().ToList();
