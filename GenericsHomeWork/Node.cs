@@ -55,7 +55,7 @@ public class NodeCollection<T> : ICollection<T>
     }
 
     // The Clear method breaks the circular loop of the removed nodes by setting the last node's Next
-    // to null and isolates the removed nodes for garbage collection
+    // to itself and isolates the removed nodes for garbage collection
 
     public void Clear()
     {
