@@ -1,13 +1,15 @@
-﻿namespace GenericsHomeWork;
+﻿using System.Collections;
+using System.Collections.Generic;
 
-public class Node<T>
+namespace GenericsHomeWork;
+
+public class NodeCollection<T> : ICollection<T>
 {
     public T Value { get; set; }
-    public Node<T> Next { get; private set; }
+    public NodeCollection<T> Next { get; private set; }
 
-    public Node(T value)
+    public NodeCollection(T value)
     {
-       
         Value = value;
         Next = this;
     }
@@ -17,9 +19,14 @@ public class Node<T>
         return Value?.ToString() ?? string.Empty;
     }
 
-    private void SetNext(Node<T> nextNode)
+    public void Add(T item)
     {
-        Next = nextNode;
+        Append(item);
+    }
+
+    public bool Contains(T item)
+    {
+        return Exists(item);
     }
 
     public void Append(T value)
@@ -28,14 +35,14 @@ public class Node<T>
         {
             throw new InvalidOperationException($"Value '{value}' already exists in the list.");
         }
-        Node<T> newNode = new Node<T>(value);
+        NodeCollection<T> newNode = new NodeCollection<T>(value);
         newNode.Next = this.Next;
         this.Next = newNode;
     }
 
     public bool Exists(T value)
     {
-        Node<T> currentNode = this;
+        NodeCollection<T> currentNode = this;
         do
         {
             if (EqualityComparer<T>.Default.Equals(currentNode.Value, value))
@@ -47,8 +54,8 @@ public class Node<T>
         return false;
     }
 
-    // We don't need to worry about garbage collection for removed nodes since
-    // they will be collected automatically when there are no references to the head node.
+    // The Clear method breaks the circular loop of the removed nodes by setting the last node's Next
+    // to itself and isolates the removed nodes for garbage collection
 
     public void Clear()
     {
@@ -56,9 +63,78 @@ public class Node<T>
         {
             return;
         }
+        this.Next = this;
+    }
 
-        Node<T> firstRemoved = this.Next;
-        this.SetNext(this);
-        
+    public int Count
+    {
+        get
+        {
+            int count = 0;
+            NodeCollection<T>? currNode = this.Next;
+            while (currNode != null && currNode != this)
+            {
+                count++;
+                currNode = currNode.Next;
+            }
+            return count;
+        }
+    }
+
+    public bool IsReadOnly => false;
+
+    public bool Remove(T value)
+    {
+        NodeCollection<T> prevValue = this;
+        NodeCollection<T> currValue = this.Next;
+
+        while (currValue != this)
+        {
+            if (EqualityComparer<T>.Default.Equals(currValue.Value, value))
+            {
+                prevValue.Next = currValue.Next;
+                return true;
+            }
+            prevValue = currValue;
+            currValue = currValue.Next;
+        }
+        return false;
+    }
+
+    public void CopyTo(T[] array, int arrayIndex)
+    {
+        ArgumentNullException.ThrowIfNull(array);
+
+        if (arrayIndex < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(arrayIndex), "arrayIndex cannot be negative.");
+        } 
+
+        if (Count > array.Length - arrayIndex)
+        {
+            throw new ArgumentException("Destination array is too small.");
+        }
+
+        NodeCollection<T>? currentValue = this.Next;
+        while (currentValue != null && currentValue != this)
+        {
+            array[arrayIndex++] = currentValue.Value;
+            currentValue = currentValue.Next;
+        }
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        NodeCollection<T>? currentValue = this.Next;
+        while (currentValue != null && currentValue != this)
+        {
+            yield return currentValue.Value;
+            currentValue = currentValue.Next;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
