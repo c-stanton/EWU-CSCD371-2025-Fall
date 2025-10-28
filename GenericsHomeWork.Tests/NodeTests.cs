@@ -6,8 +6,8 @@ using System;
 using System.Globalization;
 
 [TestClass]
-    public class NodeTests
-    {
+public class NodeTests
+{
     [TestMethod]
     public void Node_SetsValue_PointsToSelf()
     {
@@ -48,7 +48,7 @@ using System.Globalization;
         Assert.IsNotNull(head.Next, "Next node after appending should not be null.");
         Assert.AreNotEqual(head, head.Next, "Next node should not be the same as head after appending.");
     }
-    
+
 
     [TestMethod]
     public void Append_InsertsNewNode_AfterCurrentNode()
@@ -183,5 +183,130 @@ using System.Globalization;
         string result = node.ToString();
         // Assert
         Assert.AreEqual(string.Empty, result, "ToString() should return an empty string for null value.");
+    }
+
+    [TestMethod]
+    public void Add_FunctionallyEquivalentToAppend()
+    {
+        // Arrange
+        var head = new Node<string>("A");
+        // Act
+        ((ICollection<string>)head).Add("B");
+        // Assert
+        Assert.AreEqual(1, head.Count, "Add() should increase the count.");
+        Assert.AreEqual("B", head.Next!.Value, "Add() should insert 'B' after 'A'.");
+    }
+
+    [TestMethod]
+    public void Count_CalculatesCorrectNumberOfNodes()
+    {
+        // Arrange 
+        var head = new Node<int>(100);
+        Assert.AreEqual(0, head.Count, "Initial count should be 0.");
+        // Act
+        head.Add(200);
+        head.Add(300);
+        // Assert
+        Assert.AreEqual(2, head.Count, "Count should be 2 after adding two nodes.");
+        // Act
+        head.Clear();
+        // Assert
+        Assert.AreEqual(0, head.Count, "Count should be 0 after clearing the list.");
+    }
+
+    [TestMethod]
+    public void Remove_RemovesExistingNode_ReturnsTrue()
+    {
+        // Arrange
+        var head = new Node<int>(1);
+        head.Add(2);
+        head.Add(3);
+        // Act
+        bool result = head.Remove(2);
+        // Assert
+        Assert.IsTrue(result, "Remove should return true for an existing item.");
+        Assert.AreEqual(1, head.Count, "Count should decrease after removal.");
+        Assert.IsFalse(head.Contains(2), "The removed item should no longer exist.");
+        Assert.AreEqual(3, head.Next!.Value, "List structure should be preserved: 1 -> 3 -> 1.");
+        // Act
+        head.Remove(3);
+        // Assert
+        Assert.AreEqual(0, head.Count, "Count should be 0 after removing all nodes.");
+        Assert.AreEqual(head, head.Next, "Next should point to head after all nodes are removed.");
+    }
+
+    [TestMethod]
+    public void Remove_NonExistingNode_ReturnsFalse()
+    {
+        // Arrange
+        var head = new Node<string>("Start");
+        head.Add("One");
+        // Act
+        bool result = head.Remove("Missing");
+        // Assert
+        Assert.IsFalse(result, "Remove should return false for a non-existing item.");
+        Assert.AreEqual(1, head.Count, "Count should remain unchanged after attempting to remove a non-existing item.");
+    }
+
+    [TestMethod]
+    public void Remove_HeadNodeValue_ReturnsFalse()
+    {
+        // Arrange
+        var head = new Node<int>(10);
+        head.Add(20);
+        // Act
+        bool result = head.Remove(10);
+        // Assert
+        Assert.IsFalse(result, "Remove should return false when trying to remove the head node's value.");
+        Assert.AreEqual(1, head.Count, "Count should remain unchanged when attempting to remove the head node's value.");
+    }
+
+    [TestMethod]
+    public void CopyTo_CopiesElementsToCorrectArray()
+    {
+        // Arrange
+        var head = new Node<double>(0.0);
+        head.Add(1.1);
+        head.Add(2.2);
+        head.Add(3.3);
+        double[] array = new double[5];
+        int index = 1;
+        // Act
+        head.CopyTo(array, index);
+        // Assert
+        Assert.AreEqual(0.0, array[0], "Index 0 should be untouched.");
+        Assert.AreEqual(3.3, array[1], "First copied element should be at index 1.");
+        Assert.AreEqual(2.2, array[2]);
+        Assert.AreEqual(1.1, array[3], "Last copied element should be at index 3.");
+        Assert.AreEqual(0.0, array[4], "Index 4 should be untouched.");
+    }
+
+    [TestMethod]
+    public void GetEnumerator_AllowsForeachTraversal()
+    {
+        // Arrange
+        var head = new Node<string>("Start");
+        head.Add("Last");
+        head.Add("Middle");
+        var expected = new List<string> { "Middle", "Last" };
+        var actual = new List<string>();
+        // Act
+        foreach (var item in head)
+        {
+            actual.Add(item);
+        }
+        // Assert
+        CollectionAssert.AreEqual(expected, actual, "Enumerator should allow traversal of all nodes except head.");
+    }
+
+    [TestMethod]
+    public void IsReadOnly_ReturnsFalse()
+    {
+        // Arrange
+        var head = new Node<int>(5);
+        // Act
+        bool isReadOnly = ((ICollection<int>)head).IsReadOnly;
+        // Assert
+        Assert.IsFalse(isReadOnly, "IsReadOnly should return false for Node<T>.");
     }
 }
