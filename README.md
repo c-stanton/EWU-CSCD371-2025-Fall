@@ -6,21 +6,8 @@ also support customizable behavior for reading and writing content.
 
 ## Reading
 
-### Due 2/20:
-
 Chapter 13: Delegates and Lambda Expressions
 Chapter 15: Collection Interfaces with Standard Query Operators
-
-### Due 2/27:
-
-Chapter 17: Building Custom Collections (You can skim the More Collection Interfaces and Primary Collection Classes sections)
-Chapter 20: Programming with Task-Based Asynchronous Pattern
-Chapter 22: Thread Synchronization
-
-### Due 3/06
-
-Chapter 19: Introducing Multithreading
-Chapter 21: Iterating in Parallel
 
 ### Recommended But Not Required (in order of priority)
 
