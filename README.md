@@ -9,14 +9,6 @@ also support customizable behavior for reading and writing content.
 Chapter 13: Delegates and Lambda Expressions
 Chapter 15: Collection Interfaces with Standard Query Operators
 
-### Recommended But Not Required (in order of priority)
-
-Chapter 19: Introducing Multithreading
-Chapter 21: Iterating in Parallel
-Chapter 18: Reflection, Attributes, and Dynamic Programming
-Chapter 16: LINQ with Query Expressions
-Chapter 14: Events
-
 ## Instructions
 
 - Create a *Console* project called "Calculate.". ❌✔
