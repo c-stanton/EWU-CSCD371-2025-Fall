@@ -33,7 +33,7 @@ public class NodeCollection<T> : ICollection<T>
     {
         if (Exists(value))
         {
-            throw new InvalidOperationException($"Value '{value}' already exists in the list.");
+            throw new ArgumentException($"No duplicate values allowed in the list. The value '{value}' already exists.", nameof(value));
         }
         NodeCollection<T> newNode = new NodeCollection<T>(value);
         newNode.Next = this.Next;
