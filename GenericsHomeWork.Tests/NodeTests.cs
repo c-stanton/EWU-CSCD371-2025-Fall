@@ -70,7 +70,7 @@ public class NodeTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
+    [ExpectedException(typeof(ArgumentException))]
     public void Append_ThrowsException_OnDuplicateValue()
     {
         // Arrange
