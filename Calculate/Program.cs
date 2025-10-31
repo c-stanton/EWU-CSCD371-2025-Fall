@@ -20,13 +20,13 @@ public class Program
             WriteLine = Console.WriteLine,
             ReadLine = Console.ReadLine
         };
-        program.Run();
+        //program.Run();
     }
 
     
-    public void Run()
-    {
+    //public void Run()
+    //{
        
-    }
+    //}
 
 }
