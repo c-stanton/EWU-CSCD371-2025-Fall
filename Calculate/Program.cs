@@ -20,13 +20,37 @@ public class Program
             WriteLine = Console.WriteLine,
             ReadLine = Console.ReadLine
         };
-        //program.Run();
+        program.Run();
+    }
+
+
+    public void Run()
+    {
+        WriteLine("Calculator Program");
+
+        while (true)
+        {
+            WriteLine("Enter a expression");
+            string? input = ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                WriteLine("Exiting program.");
+                break;
+            }
+
+            if (Calculator.TryCalculate(input, out double result))
+            {
+                WriteLine($"Result: {result}");
+            }
+            else
+            {
+                WriteLine("Invalid expression. Please try again.");
+            }
+        }
+        WriteLine("Thanks 4 playin!");
     }
 
     
-    //public void Run()
-    //{
-       
-    //}
 
 }
