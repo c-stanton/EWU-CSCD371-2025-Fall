@@ -16,17 +16,19 @@ public class Program
     public static void Main(string[] args)
     {
         var program = new Program
+
         {
             WriteLine = Console.WriteLine,
             ReadLine = Console.ReadLine
         };
+
         program.Run();
     }
 
 
     public void Run()
     {
-        WriteLine("Calculator Program");
+        WriteLine("Calculator Program! Press Enter to exit.");
 
         while (true)
         {
