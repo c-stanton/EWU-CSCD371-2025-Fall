@@ -22,6 +22,7 @@ public class Calculator
             { '*', Multiply },
             { '/', Divide }
         };
+
     public static bool TryCalculate(string expression, out double result)
     {
         result = 0;
