@@ -1,12 +1,10 @@
 ﻿using System;
+using ConsoleUtilities;
 
 namespace Calculate;
 
 public class Program : ProgramBase
 {
-    public Program() : base()
-    {
-    }
 
     public static void Main(string[] args)
     {

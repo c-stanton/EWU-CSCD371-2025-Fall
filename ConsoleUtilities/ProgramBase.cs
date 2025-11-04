@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Calculate;
+namespace ConsoleUtilities;
 
 public abstract class ProgramBase
 {
@@ -8,7 +8,5 @@ public abstract class ProgramBase
     public required Func<string?> ReadLine { get; init; }
     protected ProgramBase()
     {
-        WriteLine = Console.WriteLine;
-        ReadLine = Console.ReadLine;
     }
 }
