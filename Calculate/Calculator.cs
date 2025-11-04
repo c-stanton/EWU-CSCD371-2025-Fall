@@ -4,18 +4,49 @@ using System.Linq;
 
 namespace Calculate;
 
-public class Calculator
+public static class Calculator<T> where T : struct, IComparable, IConvertible
 {
-    public static double Add(double a, double b) => a + b;
-    public static double Subtract(double a, double b) => a - b;
-    public static double Multiply(double a, double b) => a * b;
-    public static double Divide(double a, double b)
+    private static T ConvertToT(double value) => (T)Convert.ChangeType(value, typeof(T));
+    private static double ConvertToDouble(T value) => (double)Convert.ChangeType(value, typeof(double));
+
+    public static T Add(T a, T b)
     {
-        return b != 0 ? a / b : double.NaN;
+        dynamic dynA = a;
+        dynamic dynB = b;
+        return dynA + dynB;
     }
 
-    public static IReadOnlyDictionary<char, Func<double, double, double>> MathematicalOperations { get; } =
-        new Dictionary<char, Func<double, double, double>>
+    public static T Subtract(T a, T b) {
+        dynamic dynA = a;
+        dynamic dynB = b;
+        return dynA - dynB;
+    }
+
+    public static T Multiply(T a, T b) {
+        dynamic dynA = a;
+        dynamic dynB = b;
+        return dynA * b;
+    }
+
+    public static T Divide(T a, T b)
+    {
+        if (ConvertToDouble(b) == 0)
+        {
+            if (typeof(T) == typeof(double))
+            {
+                return ConvertToT(double.NaN);
+            }
+            return default;
+        }
+
+        dynamic dynA = a;
+        dynamic dynB = b;
+        return dynA / dynB;
+    }
+
+
+    public static IReadOnlyDictionary<char, Func<T, T, T>> MathematicalOperations { get; } =
+        new Dictionary<char, Func<T, T, T>>
         {
             { '+', Add },
             { '-', Subtract },
@@ -23,9 +54,9 @@ public class Calculator
             { '/', Divide }
         };
 
-    public static bool TryCalculate(string expression, out double result)
+    public static bool TryCalculate(string expression, out T result)
     {
-        result = 0;
+        result = default;
         string[] parts = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
         if (parts.Length != 3)
@@ -45,13 +76,16 @@ public class Calculator
             return false;
         }
 
+        T operand1 = ConvertToT(number1);
+        T operand2 = ConvertToT(number2);
+
         if (MathematicalOperations.TryGetValue(op, out var operation))
         {
-            if (op == '/' && number2 == 0)
+            if (op == '/' && ConvertToDouble(operand2) == 0)
             {
                 return false;
             }
-            result = operation(number1, number2);
+            result = operation(operand1, operand2);
             return true;
         }
 

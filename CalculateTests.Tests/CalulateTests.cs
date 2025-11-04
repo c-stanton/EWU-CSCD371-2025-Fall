@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Calculate;
-using System.Transactions;
-using System.Text;
+using System;
+using System.Collections.Generic;
 
 namespace CalculateTests.Tests;
 
@@ -44,7 +44,6 @@ public sealed class CalulateTests
         Assert.AreEqual("Messi", input);
     }
 
-
     [TestMethod]
     public void Add_ValidInput_ReturnsSum()
     {
@@ -53,7 +52,7 @@ public sealed class CalulateTests
         double b = 3;
 
         // Act
-        double result = Calculator.Add(a, b);
+        double result = Calculator<double>.Add(a, b);
 
         // Assert
         Assert.AreEqual<double>(8, result);
@@ -67,7 +66,7 @@ public sealed class CalulateTests
         double b = 3;
 
         // Act
-        double result = Calculator.Subtract(a, b);
+        double result = Calculator<double>.Subtract(a, b);
 
         // Assert
         Assert.AreEqual<double>(2, result);
@@ -81,7 +80,7 @@ public sealed class CalulateTests
         double b = 7;
 
         // Act
-        double result = Calculator.Multiply(a, b);
+        double result = Calculator<double>.Multiply(a, b);
 
         // Assert
         Assert.AreEqual<double>(469, result);
@@ -95,7 +94,7 @@ public sealed class CalulateTests
         double b = 3;
 
         // Act
-        double result = Calculator.Divide(a, b);
+        double result = Calculator<double>.Divide(a, b);
 
         // Assert
         Assert.AreEqual<double>(2, result);
@@ -109,7 +108,7 @@ public sealed class CalulateTests
         double b = 0;
 
         // Act
-        double result = Calculator.Divide(a, b);
+        double result = Calculator<double>.Divide(a, b);
 
         // Assert
         Assert.IsTrue(double.IsNaN(result));
@@ -124,7 +123,7 @@ public sealed class CalulateTests
         double expected = 15;
 
         // Act
-        bool input = Calculator.TryCalculate(expression, out double result);
+        bool input = Calculator<double>.TryCalculate(expression, out double result);
 
         // Assert
         Assert.IsTrue(input);
@@ -138,7 +137,7 @@ public sealed class CalulateTests
         string expression = "10 * 5";
 
         //Act
-        bool input = Calculator.TryCalculate(expression, out double result);
+        bool input = Calculator<double>.TryCalculate(expression, out double result);
 
         //Assert
         Assert.IsTrue(input);
@@ -152,7 +151,7 @@ public sealed class CalulateTests
         string expression = "67+67";
 
         // Act
-        bool input = Calculator.TryCalculate(expression, out double result);
+        bool input = Calculator<double>.TryCalculate(expression, out double result);
 
         // Assert
         Assert.IsFalse(input);
@@ -165,7 +164,7 @@ public sealed class CalulateTests
         string expression = "314762 / 0";
 
         // Act
-        bool input = Calculator.TryCalculate(expression, out double result);
+        bool input = Calculator<double>.TryCalculate(expression, out double result);
 
         // Assert
         Assert.IsFalse(input);
@@ -175,7 +174,7 @@ public sealed class CalulateTests
     public void MathematicalOperations_ContainsAllOperations()
     {
         // Arrange
-        var operations = Calculator.MathematicalOperations;
+        var operations = Calculator<double>.MathematicalOperations;
 
         // Act & Assert
         Assert.IsTrue(operations.ContainsKey('+'));
@@ -250,6 +249,33 @@ public sealed class CalulateTests
         Assert.AreEqual<string>("Thanks 4 playin!", outputs[7]);
     }
 
+    [TestMethod]
+    public void DecimalCalculator_PreciseMath_ReturnsCorrectDecimal()
+    {
+        // Assert
+        decimal a = 10.00m;
+        decimal b = 3.00m;
+        decimal expected = 3.3333333333333333333333333333m;
 
+        // Act
+        decimal result = Calculator<decimal>.Divide(a, b);
 
+        // Assert
+        Assert.AreEqual<decimal>(expected, result);
+    }
+
+    [TestMethod]
+    public void IntCalculator_Division_TruncatesResult()
+    {
+        // Arrange
+        int a = 8;
+        int b = 3;
+        int expected = 2;
+
+        // Act
+        int result = Calculator<int>.Divide(a,b);
+
+        // Assert
+        Assert.AreEqual<int>(expected, result);
+    }
 }

@@ -2,21 +2,15 @@
 
 namespace Calculate;
 
-public class Program
+public class Program : ProgramBase
 {
-    public required Action<string> WriteLine { get; init; }
-
-    public required Func<string?> ReadLine { get; init; }
-
-    public Program()
+    public Program() : base()
     {
-
     }
 
     public static void Main(string[] args)
     {
         var program = new Program
-
         {
             WriteLine = Console.WriteLine,
             ReadLine = Console.ReadLine
@@ -24,7 +18,6 @@ public class Program
 
         program.Run();
     }
-
 
     public void Run()
     {
@@ -41,7 +34,7 @@ public class Program
                 break;
             }
 
-            if (Calculator.TryCalculate(input, out double result))
+            if (Calculator<double>.TryCalculate(input, out double result))
             {
                 WriteLine($"Result: {result}");
             }
@@ -52,7 +45,4 @@ public class Program
         }
         WriteLine("Thanks 4 playin!");
     }
-
-    
-
 }
