@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Calculate;
 using System.Transactions;
+using System.Text;
 
 namespace CalculateTests.Tests;
 
@@ -187,5 +188,68 @@ public sealed class CalulateTests
         Assert.AreEqual<double>(1400, operations['*'](100, 14));
         Assert.AreEqual<double>(2, operations['/'](6, 3));
     }
+
+    [TestMethod]
+    public void Run_Completes_Successfully()
+    {
+        //Arrange
+        String[] inputs =
+        {
+            "10 + 5",
+            "20 - 4",
+            "3 * 7",
+            "16 / 2",
+            ""
+        };
+
+        int Index = 0;
+        var outputs = new List<string>();
+
+        var program = new Program
+        {
+            ReadLine = () => inputs[Index++],
+            WriteLine = s => outputs.Add(s)
+        };
+
+        //Act
+        program.Run();
+
+        //Assert
+        Assert.AreEqual<string>("Result: 15", outputs[2]);
+        Assert.AreEqual<string>("Result: 16", outputs[4]);
+        Assert.AreEqual<string>("Result: 21", outputs[6]);
+        Assert.AreEqual<string>("Result: 8", outputs[8]);
+    }
+
+    [TestMethod]
+    public void Run_InvalidExpression_ReturnsPrompt()
+    {
+        //Arrange
+        String[] inputs =
+        {
+            "10 / 0",
+            "5 ++ 67",
+            ""
+        };
+
+        int Index = 0;
+        var outputs = new List<string>();
+
+        var program = new Program
+        {
+            ReadLine = () => inputs[Index++],
+            WriteLine = s => outputs.Add(s)
+        };
+
+        //Act
+        program.Run();
+
+        //Assert
+        Assert.AreEqual<string>("Invalid expression. Please try again.", outputs[2]);
+        Assert.AreEqual<string>("Invalid expression. Please try again.", outputs[4]);
+        Assert.AreEqual<string>("Thanks 4 playin!", outputs[7]);
+    }
+
+
 
 }
