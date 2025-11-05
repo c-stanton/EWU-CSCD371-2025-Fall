@@ -4,6 +4,7 @@ using System.Transactions;
 using System.Text;
 using System;
 using System.Collections.Generic;
+using System.IO.Pipelines;
 
 namespace CalculateTests.Tests;
 
@@ -173,22 +174,23 @@ public sealed class CalulateTests
         Assert.IsFalse(input);
     }
 
-    [TestMethod]
-    public void MathematicalOperations_ContainsAllOperations()
+    [DataTestMethod]
+    [DataRow(6, '+', 7, 13)]
+    [DataRow(21, '-', 3, 18)]
+    [DataRow(100, '*', 14, 1400)]
+    [DataRow(6, '/', 3, 2)]
+    public void MathematicalOperations_ContainsAllOperations(double left, char op, double right, double expected)
     {
         // Arrange
         var operations = Calculator.MathematicalOperations;
 
         // Act & Assert
-        Assert.IsTrue(operations.ContainsKey('+'));
-        Assert.IsTrue(operations.ContainsKey('-'));
-        Assert.IsTrue(operations.ContainsKey('*'));
-        Assert.IsTrue(operations.ContainsKey('/'));
+        Assert.IsTrue(operations.ContainsKey(op));
 
-        Assert.AreEqual<double>(13, operations['+'](6, 7));
-        Assert.AreEqual<double>(18, operations['-'](21, 3));
-        Assert.AreEqual<double>(1400, operations['*'](100, 14));
-        Assert.AreEqual<double>(2, operations['/'](6, 3));
+        var result = operations[op](left, right);
+
+        Assert.AreEqual<double>(expected, result);
+      
     }
 
     [TestMethod]
