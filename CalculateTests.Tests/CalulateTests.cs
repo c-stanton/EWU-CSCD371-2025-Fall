@@ -2,6 +2,8 @@
 using Calculate;
 using System.Transactions;
 using System.Text;
+using System;
+using System.Collections.Generic;
 
 namespace CalculateTests.Tests;
 
@@ -39,9 +41,9 @@ public sealed class CalulateTests
         program.WriteLine($"Hey There, {input}");
 
         //Assert
-        Assert.AreEqual("Enter name:", output1);
-        Assert.AreEqual("Hey There, Messi", output2);
-        Assert.AreEqual("Messi", input);
+        Assert.AreEqual<string>("Enter name:", output1);
+        Assert.AreEqual<string>("Hey There, Messi", output2);
+        Assert.AreEqual<string>("Messi", input);
     }
 
 
@@ -102,17 +104,17 @@ public sealed class CalulateTests
     }
 
     [TestMethod]
-    public void Divide_DivideByZero_ReturnsNaN()
+    public void Divide_GetsDecimalQuotient()
     {
         // Arrange
-        double a = 6;
-        double b = 0;
+        double a = 7;
+        double b = 2;
 
         // Act
         double result = Calculator.Divide(a, b);
 
         // Assert
-        Assert.IsTrue(double.IsNaN(result));
+        Assert.AreEqual<double>(3.5, result);
     }
 
     [TestMethod]
