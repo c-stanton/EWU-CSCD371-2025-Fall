@@ -9,10 +9,8 @@ public class Calculator
     public static double Add(double a, double b) => a + b;
     public static double Subtract(double a, double b) => a - b;
     public static double Multiply(double a, double b) => a * b;
-    public static double Divide(double a, double b)
-    {
-        return b != 0 ? a / b : double.NaN;
-    }
+    public static double Divide(double a, double b) => a / b;
+    
 
     public static IReadOnlyDictionary<char, Func<double, double, double>> MathematicalOperations { get; } =
         new Dictionary<char, Func<double, double, double>>
@@ -33,7 +31,7 @@ public class Calculator
             return false;
         }
 
-        if (parts[1].Length != 1)
+       if (parts[1].Length != 1)
         {
             return false;
         }
