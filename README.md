@@ -13,7 +13,7 @@ The purpose of this assignment is to solidify your learning of:
   - Unit testing collections.
 - Implementing IEnumerable
 
-Given the amount of material (reading and assignment), **the homework will span two weeks of class with the final submission on Thursday 2/25**. (No assignment is due Thu 2/17)
+Given the amount of material (reading and assignment), **the homework will span two weeks of class**.
 
 ## Reading
 
