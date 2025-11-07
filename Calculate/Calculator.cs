@@ -24,6 +24,12 @@ public class Calculator
     public static bool TryCalculate(string expression, out double result)
     {
         result = 0;
+        
+        if (string.IsNullOrWhiteSpace(expression))
+        {
+            return false;
+        }
+        
         string[] parts = expression.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
         if (parts.Length != 3)
