@@ -89,6 +89,14 @@ public class PingProcessTests
 
         cts.Cancel();
 
+        try
+        {
+            task.Wait(TimeSpan.FromSeconds(1));
+        }
+        catch (AggregateException)
+        {
+        }
+
         Assert.Throws<AggregateException>(() => _ = task.Result);
     }
 
