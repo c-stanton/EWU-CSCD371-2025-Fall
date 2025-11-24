@@ -75,7 +75,6 @@ public class PingProcessTests
     }
 
     [TestMethod]
-#pragma warning disable CS1998
     public async Task RunAsync_UsingTpl_Success()
     {
         PingResult result = await Sut.RunAsync("localhost");
@@ -118,22 +117,21 @@ public class PingProcessTests
     public async Task RunAsync_MultipleHostAddresses_True()
     {
         string[] hostNames = new string[] { "localhost", "localhost", "localhost", "localhost" };
-        PingResult result = await Sut.RunAsync(hostNames);
 
-        var lines = result.StdOutput?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+        PingResult result = await Sut.RunAsync(hostNames, pingCountPerHost: 1);
 
-        // Count only "Reply from" lines
+        var lines = result.StdOutput?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                ?? Array.Empty<string>();
+
         int replyLinesCount = lines.Count(l => l.TrimStart().StartsWith("Reply from", StringComparison.OrdinalIgnoreCase));
 
-        // Each host sends 4 replies, 4 hosts -> 16 replies
-        int expectedReplies = 4 * hostNames.Length;
+        int expectedReplies = hostNames.Length;
 
         Assert.AreEqual(expectedReplies, replyLinesCount,
             $"Expected {expectedReplies} 'Reply from' lines, but got {replyLinesCount}");
     }
 
     [TestMethod]
-#pragma warning disable CS1998
     public async Task RunLongRunningAsync_UsingTpl_Success()
     {
         PingResult result = await Sut.RunLongRunningAsync("localhost");

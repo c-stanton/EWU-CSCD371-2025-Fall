@@ -59,8 +59,9 @@ public class PingProcess
         }, cancellationToken);
     }
 
-    public async Task<PingResult> RunAsync(
+    async public Task<PingResult> RunAsync(
         IEnumerable<string> hostNameOrAddresses,
+        int pingCountPerHost = 1,
         CancellationToken cancellationToken = default)
     {
         StringBuilder sb = new();
@@ -76,7 +77,7 @@ public class PingProcess
 
                 ProcessStartInfo psi = new("ping")
                 {
-                    Arguments = host,
+                    Arguments = $"-n {pingCountPerHost} {host}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
