@@ -18,7 +18,7 @@ public class PingProcess
 
     public PingResult Run(string hostNameOrAddress)
     {
-        StartInfo.Arguments = hostNameOrAddress;
+        StartInfo.Arguments = BuildPingArguments(hostNameOrAddress);
         StringBuilder? stringBuilder = null;
         void updateStdOutput(string? line) =>
             (stringBuilder ??= new StringBuilder()).AppendLine(line);
@@ -30,7 +30,7 @@ public class PingProcess
     {
         return Task.Run(() =>
         {
-            StartInfo.Arguments = hostNameOrAddress;
+            StartInfo.Arguments = BuildPingArguments(hostNameOrAddress);
 
             StringBuilder? sb = null;
             void output(string? line) =>
@@ -50,7 +50,7 @@ public class PingProcess
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            StartInfo.Arguments = hostNameOrAddress;
+            StartInfo.Arguments = BuildPingArguments(hostNameOrAddress);
             StringBuilder? sb = null;
             void output(string? line) =>
                 (sb ??= new StringBuilder()).AppendLine(line);
@@ -60,27 +60,22 @@ public class PingProcess
         }, cancellationToken);
     }
 
-    async public Task<PingResult> RunAsync(
-        IEnumerable<string> hostNameOrAddresses,
-        int pingCountPerHost = 1,
-        CancellationToken cancellationToken = default)
+    public async Task<PingResult> RunAsync(
+    IEnumerable<string> hostNameOrAddresses,
+    int pingCountPerHost = 1,
+    CancellationToken cancellationToken = default)
     {
         StringBuilder sb = new();
-
         object lockObj = new();
 
-        var tasks =
-            hostNameOrAddresses
-            .AsParallel()
+        var tasks = hostNameOrAddresses
             .Select(host => Task.Run(() =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                string countArg = OperatingSystem.IsWindows() ? $"-n {pingCountPerHost}" : $"-c {pingCountPerHost}";
-
                 ProcessStartInfo psi = new("ping")
                 {
-                    Arguments = $"{countArg} {host}",
+                    Arguments = BuildPingArguments(host, pingCountPerHost),
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -97,6 +92,7 @@ public class PingProcess
 
                 Process p = RunProcessInternal(psi, output, null, cancellationToken);
                 return p.ExitCode;
+
             }, cancellationToken))
             .ToArray();
 
@@ -116,7 +112,7 @@ public class PingProcess
 
             ProcessStartInfo psi = new("ping")
             {
-                Arguments = hostNameOrAddress,
+                Arguments = BuildPingArguments(hostNameOrAddress),
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -246,5 +242,14 @@ public class PingProcess
         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
         return startInfo;
+    }
+
+    private static string BuildPingArguments(string host, int count = 4)
+    {
+        string countArg = OperatingSystem.IsWindows()
+            ? $"-n {count}"
+            : $"-c {count}";
+
+        return $"{countArg} {host}";
     }
 }

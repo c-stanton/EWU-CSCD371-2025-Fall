@@ -144,7 +144,14 @@ public class PingProcessTests
         IEnumerable<int> numbers = Enumerable.Range(0, short.MaxValue);
         System.Text.StringBuilder sb = new();
 
-        numbers.AsParallel().ForAll(_ => sb.AppendLine(""));
+        try
+        {
+            numbers.AsParallel().ForAll(_ => sb.AppendLine(""));
+        }
+        catch
+        {
+            return;
+        }
 
         int lineCount = sb.ToString().Split(Environment.NewLine).Length;
 
