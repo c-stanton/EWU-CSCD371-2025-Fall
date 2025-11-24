@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -75,9 +76,11 @@ public class PingProcess
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
+                string countArg = OperatingSystem.IsWindows() ? $"-n {pingCountPerHost}" : $"-c {pingCountPerHost}";
+
                 ProcessStartInfo psi = new("ping")
                 {
-                    Arguments = $"-n {pingCountPerHost} {host}",
+                    Arguments = $"{countArg} {host}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
