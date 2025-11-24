@@ -400,7 +400,7 @@ public sealed partial class WildcardPattern
         // https://stackoverflow.com/questions/140926/normalize-newlines-in-c-sharp
         input = NormalizeNewLines().Replace(input, Environment.NewLine);
 
-        if (trimTrailingNewline && input.EndsWith(Environment.NewLine))
+        if (trimTrailingNewline && input.EndsWith(Environment.NewLine, StringComparison.Ordinal))
         {
             input = input.Substring(0, input.Length - Environment.NewLine.Length);
         }
@@ -885,7 +885,7 @@ internal sealed class WildcardPatternMatcher
         return patternPositionsForCurrentStringPosition.ReachedEndOfPattern;
     }
 
-    private class PatternPositionsVisitor
+    private sealed class PatternPositionsVisitor
     {
         private readonly int _lengthOfPattern;
 
@@ -1013,7 +1013,7 @@ internal sealed class WildcardPatternMatcher
         }
     }
 
-    private class LiteralCharacterElement : QuestionMarkElement
+    private sealed class LiteralCharacterElement : QuestionMarkElement
     {
         private readonly char _literalCharacter;
 
@@ -1039,7 +1039,7 @@ internal sealed class WildcardPatternMatcher
         }
     }
 
-    private class BracketExpressionElement : QuestionMarkElement
+    private sealed class BracketExpressionElement : QuestionMarkElement
     {
         private readonly Regex _Regex;
 
@@ -1063,7 +1063,7 @@ internal sealed class WildcardPatternMatcher
         }
     }
 
-    private class AsterixElement : PatternElement
+    private sealed class AsterixElement : PatternElement
     {
         public override void ProcessStringCharacter(
                         char currentStringCharacter,
@@ -1087,7 +1087,7 @@ internal sealed class WildcardPatternMatcher
         }
     }
 
-    private class MyWildcardPatternParser : WildcardPatternParser
+    private sealed class MyWildcardPatternParser : WildcardPatternParser
     {
         private readonly List<PatternElement> _patternElements = new();
         private CharacterNormalizer _characterNormalizer;
