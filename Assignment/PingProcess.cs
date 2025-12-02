@@ -30,6 +30,10 @@ public class PingProcess
         return Task.Run(() => Run(hostNameOrAddress));
     }
 
+    #pragma warning disable CA1822
+    // TODO: Implement the methods and remove the #pragma stuff here
+
+
     async public Task<PingResult> RunAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
     {
@@ -62,6 +66,9 @@ public class PingProcess
         await task;
         throw new NotImplementedException();
     }
+
+    #pragma warning restore CA1822
+    // TODO: Implement the methods and remove the #pragma stuff here
 
     private Process RunProcessInternal(
         ProcessStartInfo startInfo,
