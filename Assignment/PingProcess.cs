@@ -18,7 +18,7 @@ public class PingProcess
 
     public PingResult Run(string hostNameOrAddress)
     {
-        StartInfo.Arguments = hostNameOrAddress;
+        StartInfo.Arguments = FormatPingArguments(hostNameOrAddress);
         StringBuilder? stringBuilder = null;
         void updateStdOutput(string? line) =>
             (stringBuilder??=new StringBuilder()).AppendLine(line);
@@ -31,24 +31,42 @@ public class PingProcess
         return Task.Run(() => Run(hostNameOrAddress));
     }
 
-    async public Task<PingResult> RunAsync(
-        string hostNameOrAddress, CancellationToken cancellationToken = default)
+    public async Task<PingResult> RunAsync(
+        string hostNameOrAddress,
+        CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         return await Task.Run(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return Run(hostNameOrAddress);
+
+            StartInfo.Arguments = FormatPingArguments(hostNameOrAddress);
+
+            StringBuilder? sb = null;
+            void updateStdOutput(string? line) =>
+                (sb ??= new StringBuilder()).AppendLine(line);
+
+            var process = RunProcessInternal(
+                StartInfo,
+                updateStdOutput,
+                progressError: null,
+                token: cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return new PingResult(process.ExitCode, sb?.ToString());
         }, cancellationToken).ConfigureAwait(false);
     }
 
-    async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
+    public async Task<PingResult> RunAsync(
+        IEnumerable<string> hostNameOrAddresses,
+        CancellationToken cancellationToken = default)
     {
         StringBuilder sharedStringBuilder = new();
 
         void UpdateSharedStdOutput(string? line)
         {
+            if (line is null) return;
+
             lock (_stdOutputLock)
             {
                 sharedStringBuilder.AppendLine(line);
@@ -56,41 +74,61 @@ public class PingProcess
         }
 
         var pingTasks = hostNameOrAddresses.Select(host =>
-
             Task.Run(() =>
             {
-                StartInfo.Arguments = host;
-                Process process = RunProcessInternal(StartInfo, UpdateSharedStdOutput, default, default);
+                cancellationToken.ThrowIfCancellationRequested();
 
+                var startInfo = new ProcessStartInfo("ping")
+                {
+                    Arguments = FormatPingArguments(host)
+                };
+
+                var process = RunProcessInternal(startInfo, UpdateSharedStdOutput, default, cancellationToken);
                 return process.ExitCode;
-            })
-
+            }, cancellationToken)
         ).ToList();
 
-        int[] exitCodes = await Task.WhenAll(pingTasks);
+        int[] exitCodes = await Task.WhenAll(pingTasks).ConfigureAwait(false);
 
         int totalExitCode = exitCodes.Sum();
 
         return new PingResult(totalExitCode, sharedStringBuilder.ToString());
     }
 
-    async public Task<PingResult> RunLongRunningAsync(
+    public Task<PingResult> RunAsync(params string[] hostNameOrAddresses) =>
+        RunAsync((IEnumerable<string>)hostNameOrAddresses);
+
+    public Task<int> RunLongRunningAsync(
+        ProcessStartInfo startInfo,
+        Action<string?>? progressOutput,
+        Action<string?>? progressError,
+        CancellationToken token)
+    {
+        return Task.Factory.StartNew(() =>
+        {
+            var process = RunProcessInternal(startInfo, progressOutput, progressError, token);
+            return process.ExitCode;
+        }, token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
+    }
+
+    public async Task<PingResult> RunLongRunningAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
     {
-        StringBuilder stringBuilder = new();
-        void updateStdOutput(string? line) => stringBuilder.AppendLine(line);
+        StringBuilder sb = new();
+        void updateStdOutput(string? line) => sb.AppendLine(line);
 
-        Process process = await Task.Factory.StartNew(() =>
+        var startInfo = new ProcessStartInfo("ping")
         {
-            StartInfo.Arguments = hostNameOrAddress;
+            Arguments = FormatPingArguments(hostNameOrAddress)
+        };
 
-            return RunProcessInternal(StartInfo, updateStdOutput, default, cancellationToken);
+        int exitCode = await RunLongRunningAsync(
+            startInfo,
+            updateStdOutput,
+            progressError: null,
+            token: cancellationToken).ConfigureAwait(false);
 
-        }, cancellationToken,
-           TaskCreationOptions.LongRunning,
-           TaskScheduler.Current);
-
-        return new PingResult(process.ExitCode, stringBuilder.ToString());
+        return new PingResult(exitCode, sb.ToString());
     }
 
     private Process RunProcessInternal(
@@ -200,4 +238,16 @@ public class PingProcess
 
         return startInfo;
     }
+
+    private static string FormatPingArguments(string host)
+{
+    if (OperatingSystem.IsWindows())
+    {
+        return $"-n 4 {host}";
+    }
+    else
+    {
+        return $"-c 4 {host}";
+    }
+}
 }
