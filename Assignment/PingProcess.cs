@@ -18,7 +18,7 @@ public class PingProcess
 
     public PingResult Run(string hostNameOrAddress)
     {
-        StartInfo.Arguments = $"-c 4 {hostNameOrAddress}";
+        StartInfo.Arguments = hostNameOrAddress;
         StringBuilder? stringBuilder = null;
         void updateStdOutput(string? line) =>
             (stringBuilder??=new StringBuilder()).AppendLine(line);
@@ -59,7 +59,7 @@ public class PingProcess
 
             Task.Run(() =>
             {
-                StartInfo.Arguments = host;
+                StartInfo.Arguments = $"-c 4 {host} -W 1";
                 Process process = RunProcessInternal(StartInfo, UpdateSharedStdOutput, default, default);
 
                 return process.ExitCode;
