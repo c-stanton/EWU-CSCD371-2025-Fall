@@ -14,6 +14,7 @@ public record struct PingResult(int ExitCode, string? StdOutput);
 public class PingProcess
 {
     private ProcessStartInfo StartInfo { get; } = new("ping");
+    private readonly object _stdOutputLock = new();
 
     public PingResult Run(string hostNameOrAddress)
     {
@@ -30,10 +31,6 @@ public class PingProcess
         return Task.Run(() => Run(hostNameOrAddress));
     }
 
-    #pragma warning disable CA1822
-    // TODO: Implement the methods and remove the #pragma stuff here
-
-
     async public Task<PingResult> RunAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
     {
@@ -48,31 +45,53 @@ public class PingProcess
 
     async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
     {
-        StringBuilder? stringBuilder = null;
-        ParallelQuery<Task<int>>? all = hostNameOrAddresses.AsParallel().Select(async item =>
+        StringBuilder sharedStringBuilder = new();
+
+        void UpdateSharedStdOutput(string? line)
         {
-            Task<PingResult> task = null!;
-            // ...
+            lock (_stdOutputLock)
+            {
+                sharedStringBuilder.AppendLine(line);
+            }
+        }
 
-            await task.WaitAsync(default(CancellationToken));
-            return task.Result.ExitCode;
-        });
+        var pingTasks = hostNameOrAddresses.Select(host =>
 
-        await Task.WhenAll(all);
-        int total = all.Aggregate(0, (total, item) => total + item.Result);
-        return new PingResult(total, stringBuilder?.ToString());
+            Task.Run(() =>
+            {
+                StartInfo.Arguments = host;
+                Process process = RunProcessInternal(StartInfo, UpdateSharedStdOutput, default, default);
+
+                return process.ExitCode;
+            })
+
+        ).ToList();
+
+        int[] exitCodes = await Task.WhenAll(pingTasks);
+
+        int totalExitCode = exitCodes.Sum();
+
+        return new PingResult(totalExitCode, sharedStringBuilder.ToString());
     }
 
     async public Task<PingResult> RunLongRunningAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
     {
-        Task task = null!;
-        await task;
-        throw new NotImplementedException();
-    }
+        StringBuilder stringBuilder = new();
+        void updateStdOutput(string? line) => stringBuilder.AppendLine(line);
 
-    #pragma warning restore CA1822
-    // TODO: Implement the methods and remove the #pragma stuff here
+        Process process = await Task.Factory.StartNew(() =>
+        {
+            StartInfo.Arguments = hostNameOrAddress;
+
+            return RunProcessInternal(StartInfo, updateStdOutput, default, cancellationToken);
+
+        }, cancellationToken,
+           TaskCreationOptions.LongRunning,
+           TaskScheduler.Current);
+
+        return new PingResult(process.ExitCode, stringBuilder.ToString());
+    }
 
     private Process RunProcessInternal(
         ProcessStartInfo startInfo,
