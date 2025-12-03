@@ -95,6 +95,43 @@ public class PingProcess
         return new PingResult(totalExitCode, sharedStringBuilder.ToString());
     }
 
+    public async Task<PingResult> RunAsync(
+        string hostNameOrAddress,
+        IProgress<string> progress,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        StringBuilder finalOutput = new();
+
+        void combinedOutput(string? line)
+        {
+            if (line != null)
+            {
+                progress.Report(line);
+
+                finalOutput.AppendLine(line);
+            }
+        }
+
+        var startInfo = new ProcessStartInfo("ping")
+        {
+            Arguments = FormatPingArguments(hostNameOrAddress)
+        };
+
+        Process process = await Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return RunProcessInternal(startInfo, combinedOutput, default, cancellationToken);
+
+        }, cancellationToken).ConfigureAwait(false);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return new PingResult(process.ExitCode, finalOutput.ToString());
+    }
+
     public Task<PingResult> RunAsync(params string[] hostNameOrAddresses) =>
         RunAsync((IEnumerable<string>)hostNameOrAddresses);
 

@@ -170,6 +170,34 @@ public class PingProcessTests
             $"Error: StringBuilder was unexpectedly thread-safe. Count was {lineCount}, expected was {expectedThreadSafeCount}.");
     }
 
+    [TestMethod]
+    async public Task RunAsync_IProgress_CapturesOutputIncrementally()
+    {
+        List<string> capturedProgressLines = new();
+
+        IProgress<string> progress = new Progress<string>(line =>
+        {
+            capturedProgressLines.Add(line);
+        });
+
+        PingResult result = await Sut.RunAsync("localhost", progress);
+
+        Assert.AreEqual(0, result.ExitCode);
+        Assert.IsFalse(string.IsNullOrWhiteSpace(result.StdOutput));
+        Assert.IsNotEmpty(capturedProgressLines, "Progress reporter did not capture any output lines.");
+
+        int finalLineCount = result.StdOutput
+            ?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+            .Length ?? 0;
+
+        int expectedMinimumLines = finalLineCount - 2;
+
+        Assert.IsGreaterThanOrEqualTo(
+            expectedMinimumLines,
+            capturedProgressLines.Count,
+            "Captured progress lines did not meet the expected minimum count."); // <--- SIMPLIFIED MESSAGE
+    }
+
     readonly string PingOutputLikeExpression = @"
 Pinging * with 32 bytes of data:
 Reply from ::1: time<*
