@@ -17,7 +17,7 @@ public class PingProcess
 
     public PingResult Run(string hostNameOrAddress)
     {
-        StartInfo.Arguments = hostNameOrAddress;
+        StartInfo.Arguments = FormatPingArguments(hostNameOrAddress);
         StringBuilder? stringBuilder = null;
         void updateStdOutput(string? line) =>
             (stringBuilder??=new StringBuilder()).AppendLine(line);
@@ -181,4 +181,16 @@ public class PingProcess
 
         return startInfo;
     }
+
+    private static string FormatPingArguments(string host)
+{
+    if (OperatingSystem.IsWindows())
+    {
+        return $"-n 4 {host}";
+    }
+    else
+    {
+        return $"-c 4 {host}";
+    }
+}
 }
