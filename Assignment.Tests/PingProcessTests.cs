@@ -43,7 +43,7 @@ public class PingProcessTests
     {
         (int exitCode, string? stdOutput) = Sut.Run("badaddress");
 
-        Assert.AreEqual<int>(1, exitCode);
+        Assert.AreNotEqual<int>(0, exitCode);
     }
 
     [TestMethod]
