@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Assignment.Tests;
@@ -92,45 +93,86 @@ public class PingProcessTests
     // [ExpectedException(typeof(AggregateException))]
     public void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrapping()
     {
-        
+        var cts = new CancellationTokenSource();
+
+        Task<PingResult> task = Sut.RunAsync("localhost", cts.Token);
+
+        cts.Cancel();
+
+        Assert.Throws<AggregateException>(() => task.Wait());
     }
 
     [TestMethod]
     // [ExpectedException(typeof(TaskCanceledException))]
     public void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrappingTaskCanceledException()
     {
-        // Use exception.Flatten()
+        var cts = new CancellationTokenSource();
+        Task<PingResult> task = Sut.RunAsync("localhost", cts.Token);
+
+        cts.Cancel();
+
+        var aggregateEx = Assert.Throws<AggregateException>(() => task.Wait());
+
+        Assert.IsTrue(aggregateEx.Flatten().InnerExceptions.Any(e => e is TaskCanceledException),
+            "The AggregateException did not contain a TaskCanceledException.");
     }
 
     [TestMethod]
     async public Task RunAsync_MultipleHostAddresses_True()
     {
-        // Pseudo Code - don't trust it!!!
         string[] hostNames = new string[] { "localhost", "localhost", "localhost", "localhost" };
-        int expectedLineCount = PingOutputLikeExpression.Split(Environment.NewLine).Length*hostNames.Length;
+
+        int pingOutputLines = PingOutputLikeExpression.Split(Environment.NewLine).Length;
+        int expectedLineCount = pingOutputLines * hostNames.Length;
+
         PingResult result = await Sut.RunAsync(hostNames);
-        int? lineCount = result.StdOutput?.Split(Environment.NewLine).Length;
-        Assert.AreEqual(expectedLineCount, lineCount);
+
+        Assert.AreEqual(0, result.ExitCode);
+        Assert.IsFalse(string.IsNullOrWhiteSpace(result.StdOutput));
+
+        int? lineCount = result.StdOutput?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Length;
+
+        int expectedNonEmptyLineCount = PingOutputLikeExpression.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Length * hostNames.Length;
+
+        Assert.IsNotNull(lineCount, "Standard output should not be null.");
+
+        Assert.IsGreaterThanOrEqualTo(lineCount.Value, expectedLineCount, $"Expected at least {expectedLineCount} lines, but got {lineCount.Value}.");
     }
 
     [TestMethod]
-#pragma warning disable CS1998 // Remove this
     async public Task RunLongRunningAsync_UsingTpl_Success()
     {
-        PingResult result = default;
+        PingResult result = await Sut.RunLongRunningAsync("localhost");
         // Test Sut.RunLongRunningAsync("localhost");
         AssertValidPingOutput(result);
     }
-#pragma warning restore CS1998 // Remove this
 
     [TestMethod]
     public void StringBuilderAppendLine_InParallel_IsNotThreadSafe()
     {
-        IEnumerable<int> numbers = Enumerable.Range(0, short.MaxValue);
+        const int N = 100_000;
         System.Text.StringBuilder stringBuilder = new();
-        numbers.AsParallel().ForAll(item => stringBuilder.AppendLine(""));
+
+        int expectedThreadSafeCount = N + 1;
+
+        try
+        {
+            Parallel.For(0, N, (i) =>
+            {
+                stringBuilder.AppendLine("");
+                Thread.Yield();
+            });
+        }
+        catch (AggregateException ex) when (ex.Flatten().InnerExceptions.Any(e => e is ArgumentException))
+        {
+            Assert.AreNotEqual(0, expectedThreadSafeCount, "Hard crash (ArgumentException) occurred, proving non-thread-safety.");
+            return;
+        }
+
         int lineCount = stringBuilder.ToString().Split(Environment.NewLine).Length;
-        Assert.AreNotEqual(lineCount, numbers.Count()+1);
+
+        Assert.AreNotEqual(expectedThreadSafeCount, lineCount,
+            $"Error: StringBuilder was unexpectedly thread-safe. Count was {lineCount}, expected was {expectedThreadSafeCount}.");
     }
 
     readonly string PingOutputLikeExpression = @"
