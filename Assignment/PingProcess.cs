@@ -13,7 +13,7 @@ public record struct PingResult(int ExitCode, string? StdOutput);
 
 public class PingProcess
 {
-    private ProcessStartInfo _baseStartInfo = new("ping");
+    private readonly ProcessStartInfo _baseStartInfo = new("ping");
     private readonly object _stdOutputLock = new();
 
     public PingResult Run(string hostNameOrAddress)
