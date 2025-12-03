@@ -13,26 +13,29 @@ public record struct PingResult(int ExitCode, string? StdOutput);
 
 public class PingProcess
 {
-    private ProcessStartInfo StartInfo { get; } = new("ping");
+    private readonly ProcessStartInfo _baseStartInfo = new("ping");
+    private readonly object _stdOutputLock = new();
 
     public PingResult Run(string hostNameOrAddress)
     {
-        StartInfo.Arguments = hostNameOrAddress;
+        var startInfo = new ProcessStartInfo("ping")
+        {
+            Arguments = $"-c 4 {hostNameOrAddress}"
+        };
+
         StringBuilder? stringBuilder = null;
         void updateStdOutput(string? line) =>
-            (stringBuilder??=new StringBuilder()).AppendLine(line);
-        Process process = RunProcessInternal(StartInfo, updateStdOutput, default, default);
-        return new PingResult( process.ExitCode, stringBuilder?.ToString());
+            (stringBuilder ??= new StringBuilder()).AppendLine(line);
+
+        Process process = RunProcessInternal(startInfo, updateStdOutput, default, default);
+
+        return new PingResult(process.ExitCode, stringBuilder?.ToString());
     }
 
     public Task<PingResult> RunTaskAsync(string hostNameOrAddress)
     {
         return Task.Run(() => Run(hostNameOrAddress));
     }
-
-    #pragma warning disable CA1822
-    // TODO: Implement the methods and remove the #pragma stuff here
-
 
     async public Task<PingResult> RunAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
@@ -48,31 +51,60 @@ public class PingProcess
 
     async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
     {
-        StringBuilder? stringBuilder = null;
-        ParallelQuery<Task<int>>? all = hostNameOrAddresses.AsParallel().Select(async item =>
+        StringBuilder sharedStringBuilder = new();
+
+        void UpdateSharedStdOutput(string? line)
         {
-            Task<PingResult> task = null!;
-            // ...
+            lock (_stdOutputLock)
+            {
+                sharedStringBuilder.AppendLine(line);
+            }
+        }
 
-            await task.WaitAsync(default(CancellationToken));
-            return task.Result.ExitCode;
-        });
+        var pingTasks = hostNameOrAddresses.Select(host =>
 
-        await Task.WhenAll(all);
-        int total = all.Aggregate(0, (total, item) => total + item.Result);
-        return new PingResult(total, stringBuilder?.ToString());
+            Task.Run(() =>
+            {
+                var startInfo = new ProcessStartInfo("ping")
+                {
+                    Arguments = $"-c 4 {host} -W 1"
+                };
+
+                Process process = RunProcessInternal(startInfo, UpdateSharedStdOutput, default, default);
+
+                return process.ExitCode;
+            })
+
+        ).ToList();
+
+        int[] exitCodes = await Task.WhenAll(pingTasks);
+
+        int totalExitCode = exitCodes.Sum();
+
+        return new PingResult(totalExitCode, sharedStringBuilder.ToString());
     }
 
     async public Task<PingResult> RunLongRunningAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
     {
-        Task task = null!;
-        await task;
-        throw new NotImplementedException();
-    }
+        StringBuilder stringBuilder = new();
+        void updateStdOutput(string? line) => stringBuilder.AppendLine(line);
 
-    #pragma warning restore CA1822
-    // TODO: Implement the methods and remove the #pragma stuff here
+        Process process = await Task.Factory.StartNew(() =>
+        {
+            var startInfo = new ProcessStartInfo("ping")
+            {
+                Arguments = $"-c 4 {hostNameOrAddress}"
+            };
+
+            return RunProcessInternal(startInfo, updateStdOutput, default, cancellationToken);
+
+        }, cancellationToken,
+        TaskCreationOptions.LongRunning,
+        TaskScheduler.Current);
+
+        return new PingResult(process.ExitCode, stringBuilder.ToString());
+    }
 
     private Process RunProcessInternal(
         ProcessStartInfo startInfo,
