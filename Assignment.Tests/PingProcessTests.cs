@@ -33,7 +33,6 @@ public class PingProcessTests
         Assert.AreEqual<int>(0, exitCode);
     }
 
-
     [TestMethod]
     public void Run_InvalidAddressOutput_Success()
     {
@@ -71,23 +70,19 @@ public class PingProcessTests
         // Do NOT use async/await in this test.
         Task<PingResult> task = Sut.RunAsync("localhost"); // uses .RunAsync()
         
-        PingResult result = task.GetAwaiter().GetResult();;
+        PingResult result = task.GetAwaiter().GetResult();
         
         AssertValidPingOutput(result);
     }
 
     [TestMethod]
-#pragma warning disable CS1998 // Remove this
     async public Task RunAsync_UsingTpl_Success()
     {
         // DO use async/await in this test.
-        PingResult result = default;
+        PingResult result = await Sut.RunAsync("localhost");
 
-        // Test Sut.RunAsync("localhost");
         AssertValidPingOutput(result);
     }
-#pragma warning restore CS1998 // Remove this
-
 
     [TestMethod]
     // [ExpectedException(typeof(AggregateException))]
