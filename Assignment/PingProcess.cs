@@ -13,17 +13,23 @@ public record struct PingResult(int ExitCode, string? StdOutput);
 
 public class PingProcess
 {
-    private ProcessStartInfo StartInfo { get; } = new("ping");
+    private ProcessStartInfo _baseStartInfo = new("ping");
     private readonly object _stdOutputLock = new();
 
     public PingResult Run(string hostNameOrAddress)
     {
-        StartInfo.Arguments = hostNameOrAddress;
+        var startInfo = new ProcessStartInfo("ping")
+        {
+            Arguments = $"-c 4 {hostNameOrAddress}"
+        };
+
         StringBuilder? stringBuilder = null;
         void updateStdOutput(string? line) =>
-            (stringBuilder??=new StringBuilder()).AppendLine(line);
-        Process process = RunProcessInternal(StartInfo, updateStdOutput, default, default);
-        return new PingResult( process.ExitCode, stringBuilder?.ToString());
+            (stringBuilder ??= new StringBuilder()).AppendLine(line);
+
+        Process process = RunProcessInternal(startInfo, updateStdOutput, default, default);
+
+        return new PingResult(process.ExitCode, stringBuilder?.ToString());
     }
 
     public Task<PingResult> RunTaskAsync(string hostNameOrAddress)
@@ -59,8 +65,12 @@ public class PingProcess
 
             Task.Run(() =>
             {
-                StartInfo.Arguments = $"-c 4 {host} -W 1";
-                Process process = RunProcessInternal(StartInfo, UpdateSharedStdOutput, default, default);
+                var startInfo = new ProcessStartInfo("ping")
+                {
+                    Arguments = $"-c 4 {host} -W 1"
+                };
+
+                Process process = RunProcessInternal(startInfo, UpdateSharedStdOutput, default, default);
 
                 return process.ExitCode;
             })
@@ -82,13 +92,16 @@ public class PingProcess
 
         Process process = await Task.Factory.StartNew(() =>
         {
-            StartInfo.Arguments = hostNameOrAddress;
+            var startInfo = new ProcessStartInfo("ping")
+            {
+                Arguments = $"-c 4 {hostNameOrAddress}"
+            };
 
-            return RunProcessInternal(StartInfo, updateStdOutput, default, cancellationToken);
+            return RunProcessInternal(startInfo, updateStdOutput, default, cancellationToken);
 
         }, cancellationToken,
-           TaskCreationOptions.LongRunning,
-           TaskScheduler.Current);
+        TaskCreationOptions.LongRunning,
+        TaskScheduler.Current);
 
         return new PingResult(process.ExitCode, stringBuilder.ToString());
     }
